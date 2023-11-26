@@ -1,0 +1,3 @@
+[submodule "cermine"]
+	path = cermine
+	url = https://github.com/CeON/CERMINE
