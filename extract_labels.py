@@ -33,7 +33,6 @@ def get_labels(text):
     return re.findall(r"\[([0-9_]+)\]", text)
 
 def main():
-    print(next(os.walk(base_path))[1])
     data = []
 
     for folder in next(os.walk(base_path))[1]:
@@ -63,8 +62,6 @@ def main():
         # To-do: need fix for reference_dict
         reference_dict = {int(x.split("]")[0][1:]): x for x in reference_blocks if x.count("]") < 4}
         print(len(processed_blocks))
-        print(reference_blocks)
-        print(reference_dict)
 
         with open(bibfile, "r") as f:
             string = f.read()
@@ -91,17 +88,16 @@ def main():
             if not labels:
                 continue
 
-            new_labels = []
+            _, _, ref_map = extract_refs_from_list([title_dict[int(label)] for label in labels if int(label) in title_dict], base_directory)
+
+            new_label = []
             ref_directory = []
             for label in labels:
-                if int(label) not in title_dict:
-                    continue
-                directory = base_directory + "/references/" + title_dict[int(label)]
-                if os.path.isdir(directory):
-                    new_labels.append(label)
-                    ref_directory.append(directory)
-            labels = new_labels
-
+                if int(label) in title_dict:
+                    if title_dict[int(label)] in ref_map:
+                        new_label.append(label)
+                        ref_directory.append(ref_map[title_dict[int(label)]])
+            labels = new_label
             if not labels:
                 continue
 

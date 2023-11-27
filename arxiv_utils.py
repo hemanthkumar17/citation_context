@@ -1,7 +1,8 @@
 import arxiv
 import os
 import re
-import tqdm
+from tqdm import tqdm
+import shutil
 
 def get_base_dataset(topic = "large language models", dataset_size=40, base_path = "./arxiv_mine"):
     search = arxiv.Search(
@@ -42,10 +43,13 @@ def extract_refs_from_bibtex(bibfile):
 
 def extract_refs_from_list(references, directory):
     directory = directory + "/references"
+    print(references)
     if not os.path.exists(directory):
         os.mkdir(directory)
     else:
-        return       
+        # return None, None, None
+        shutil.rmtree(directory)
+        os.mkdir(directory)
 
     client = arxiv.Client()
     # query = "".join([f"ti:{x} OR " for x in references[:-1]]) + "ti:" + references[-1]
@@ -63,4 +67,4 @@ def extract_refs_from_list(references, directory):
                 res.download_pdf(directory + "/" + res.title)
                 ref_mapping[file] = directory + "/" + res.title
     print(f"Fraction found: {len(os.listdir(directory))} / {len(references)}")
-    return len(os.listdir(directory)),  len(references), ref_mapping
+    return (len(os.listdir(directory)),  len(references), ref_mapping)
