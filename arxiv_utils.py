@@ -3,6 +3,7 @@ import os
 import re
 from tqdm import tqdm
 import shutil
+import json
 
 def get_base_dataset(topic = "large language models", dataset_size=40, base_path = "./arxiv_mine"):
     search = arxiv.Search(
@@ -43,13 +44,16 @@ def extract_refs_from_bibtex(bibfile):
 
 def extract_refs_from_list(references, directory):
     directory = directory + "/references"
-    print(references)
     if not os.path.exists(directory):
         os.mkdir(directory)
     else:
         # return None, None, None
-        shutil.rmtree(directory)
-        os.mkdir(directory)
+        if not os.path.isfile(directory + "/mapping.json"):
+            shutil.rmtree(directory)
+            os.mkdir(directory)
+        else:
+            with open(directory + "/mapping.json", "r") as f:
+                return None, None, json.load(f)
 
     client = arxiv.Client()
     # query = "".join([f"ti:{x} OR " for x in references[:-1]]) + "ti:" + references[-1]
@@ -58,7 +62,7 @@ def extract_refs_from_list(references, directory):
     for file in tqdm(references):
         search = arxiv.Search(
         query = f"ti:{file}",
-        max_results = 5,    # Expand search if needed to more than 5 results, but practically, 5 is a good threshold
+        max_results = 10,    # Expand search if needed to more than 5 results, but practically, 5 is a good threshold
         )
         for res in client.results(search):
             if all(map(res.title.lower().__contains__, file.lower().split())):
@@ -67,4 +71,6 @@ def extract_refs_from_list(references, directory):
                 res.download_pdf(directory + "/" + res.title)
                 ref_mapping[file] = directory + "/" + res.title
     print(f"Fraction found: {len(os.listdir(directory))} / {len(references)}")
+    with open(directory + "/mapping.json", "w") as f:
+        json.dump(ref_mapping, f)
     return (len(os.listdir(directory)),  len(references), ref_mapping)

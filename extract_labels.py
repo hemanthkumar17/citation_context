@@ -9,6 +9,7 @@ from langchain.storage import LocalFileStore
 import re
 from unidecode import unidecode
 import pandas as pd
+import shutil
 
 from arxiv_utils import extract_refs_from_list
 
@@ -34,11 +35,11 @@ def get_labels(text):
 
 def main():
     data = []
-
+    # Make a centralized paper repo, with a mapping json
     for folder in next(os.walk(base_path))[1]:
         base_directory = base_path + folder
         file = glob.glob(base_directory + "/*.pdf")[0]
-        bibfile = glob.glob(base_directory + "/*.bibtex")[0]
+        # bibfile = glob.glob(base_directory + "/*.bibtex")[0]
         print(base_directory)
         doc = fitz.open(file)
         blocks = []
@@ -50,7 +51,7 @@ def main():
         # blocks = [b[4].replace("\n", " ") for b in blocks if len(b[4].replace("\n", " ").split(" ")) > 20 and not (b[4][0] == "[" and (b[4][2] == "]" or b[4][3] == "]" or b[4][4] == "]"))]
         processed_blocks = [b[4].replace("\n", " ") for b in blocks if len(b[4].replace("\n", " ").split(" ")) > 20 and not (b[4][0] == "[" and (b[4][2] == "]" or b[4][3] == "]" or b[4][4] == "]"))]
         reference_blocks = [unidecode(b[4].replace("\n", " ")).replace("- ", "") for b in blocks if (b[4][0] == "[" and (b[4][2] == "]" or b[4][3] == "]" or b[4][4] == "]"))]
-        
+
         
         reference_dict = {}
         # for x in reference_blocks:
@@ -60,27 +61,32 @@ def main():
         #         print(title)
 
         # To-do: need fix for reference_dict
-        reference_dict = {int(x.split("]")[0][1:]): x for x in reference_blocks if x.count("]") < 4}
+        reference_dict = {int(x.split("]")[0][1:]): x for x in reference_blocks if x.count("]") < 4 and x.split("]")[0][1:].isnumeric}
         print(len(processed_blocks))
 
-        with open(bibfile, "r") as f:
-            string = f.read()
-            # print(string)
-            start = [m.start() for m in re.finditer('@', string)]
-            end = [m.start() for m in re.finditer(',\n}\n', string)]
+        # with open(bibfile, "r") as f:
+        #     string = f.read()
+        #     # print(string)
+        #     start = [m.start() for m in re.finditer('@', string)]
+        #     end = [m.start() for m in re.finditer(',\n}\n', string)]
 
-            references = []
-            for s, e in zip(start, end):
-                try:
-                    references.append(string[s:e].split("title = {")[1].split("},")[0].split(',')[0])
-                except:
-                    print("Error for ", string[s:e])
+        #     references = []
+        #     for s, e in zip(start, end):
+        #         try:
+        #             references.append(string[s:e].split("title = {")[1].split("},")[0].split(',')[0])
+        #         except:
+        #             print("Error for ", string[s:e])
         title_dict = {}
-        for key in reference_dict:
-            for r in references:
-                if r in reference_dict[key]:
-                    title_dict[key] = r
-                    continue
+        # for key in reference_dict:
+        #     for r in references:
+        #         if r in reference_dict[key]:
+        #             title_dict[key] = r
+        #             continue
+        title_dict = reference_dict
+        if not title_dict:
+            shutil.rmtree(base_directory)
+            continue
+        _, _, ref_map = extract_refs_from_list(title_dict.values(), base_directory)
 
         # Code to zip blocks with references using the reference_dict
         for block in processed_blocks:
@@ -88,7 +94,6 @@ def main():
             if not labels:
                 continue
 
-            _, _, ref_map = extract_refs_from_list([title_dict[int(label)] for label in labels if int(label) in title_dict], base_directory)
 
             new_label = []
             ref_directory = []
@@ -113,13 +118,10 @@ def main():
             
             for label, dir in zip(labels, ref_directory):
                 data.append({"text": text, "label": title_dict[int(label)], "original_text": original_text, "file_name": file, "ref_file_name": dir})
-        print(data)
 
         # embeddings = embed_text(blocks, folder)
-        # print(len(embeddings))
     pandas_data = pd.DataFrame(data)
     print(pandas_data)
-    print(pandas_data["ref_file_name"])
     pandas_data.to_parquet("citation_context.parquet")
     pass
 

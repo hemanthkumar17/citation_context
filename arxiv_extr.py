@@ -2,7 +2,7 @@ import arxiv
 import os
 search = arxiv.Search(
   query = "large language models",
-  max_results = 40,
+  max_results = 200,
   sort_by = arxiv.SortCriterion.Relevance
 )
 
