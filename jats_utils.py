@@ -143,7 +143,7 @@ def extract_block_reference():
             print(ref_map_json)
             # print(blocks)
 
-            data = data + [(file) + x for x in jp.get_data(blocks, ref_to_dir)]
+            data = data + [tuple([file]) + x for x in jp.get_data(blocks, ref_to_dir)]
             print(data)
         json.dump(ref_map_json, f)
         # break
