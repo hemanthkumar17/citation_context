@@ -3,8 +3,25 @@ import pandas as pd
 import fitz
 import glob
 
+from langchain.embeddings import HuggingFaceBgeEmbeddings, CacheBackedEmbeddings
+from langchain.storage import LocalFileStore
+
 base_path = "arxiv_mine/"
 
+def embed_text(text, cache_name):
+    model_name = "BAAI/bge-small-en"
+    model_kwargs = {"device": "cpu"}
+    encode_kwargs = {"normalize_embeddings": True}
+    hf = HuggingFaceBgeEmbeddings(
+        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
+
+    fs = LocalFileStore("./cache/" + cache_name)
+
+    cached_embedder = CacheBackedEmbeddings.from_bytes_store(
+        hf, fs, namespace=model_name
+    )
+
+    return cached_embedder.embed_documents(text)
 def get_reference_vectors(row):
     print(row)
     ref_filename = row["label"]

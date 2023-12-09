@@ -1,4 +1,6 @@
 arxiv_mine
+arxiv_data
+arxiv_sample
 cache
 __pycache__/arxiv_utils.cpython-38.pyc
 citation_context.parquet

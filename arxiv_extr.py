@@ -2,11 +2,11 @@ import arxiv
 import os
 search = arxiv.Search(
   query = "large language models",
-  max_results = 200,
+  max_results = 1,
   sort_by = arxiv.SortCriterion.Relevance
 )
 
-base_path = "./arxiv_mine/"
+base_path = "./arxiv_sample/"
 
 for result in arxiv.Client().results(search):
   print(result.title)
