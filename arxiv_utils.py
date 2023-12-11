@@ -52,10 +52,13 @@ class ArxivHandler():
         )
         for res in self.client.results(search):
             if jaccard_similarity(res.title.lower().split(), title.lower().split()) > 0.8:
-                if not os.path.exists(directory + "/" + res.title):
-                    os.mkdir(directory + "/" + res.title)
-                res.download_pdf(directory + "/" + res.title)
-                return directory + "/" + res.title
+                if not os.path.exists(directory + "/" + res.title.replace("/", " ")):
+                    os.mkdir(directory + "/" + res.title.replace("/", " "))
+                try:
+                    res.download_pdf(directory + "/" + res.title.replace("/", " "))
+                except:
+                    continue
+                return directory + "/" + res.title.replace("/", " ")
         return None
 
 def extract_refs_from_bibtex(bibfile):

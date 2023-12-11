@@ -16,7 +16,7 @@ import json
 
 from arxiv_utils import extract_refs_from_list, ArxivHandler
 
-base_path = "arxiv_data"
+base_path = "arxiv_sample"
 
 def get_labels(text):
     return re.findall(r"\[([0-9_]+)\]", text)
@@ -113,12 +113,14 @@ class JatsParser():
 
 def extract_block_reference():
 
-    data = []
-    with open(f"metadata_{base_path}.json", "w") as f:
+    with open(f"metadata_{base_path}.json", "r+") as f:
         try:
             ref_map_json = json.load(f)
         except IOError:
-            ref_map_json = {}    
+            ref_map_json = {}
+        except json.decoder.JSONDecodeError:
+            ref_map_json = {}
+        data = []
         for folder in next(os.walk(base_path))[1]:
             file_dir = base_path + "/" + folder
             file = glob.glob(file_dir + "/*.cermxml")
@@ -126,13 +128,12 @@ def extract_block_reference():
                 file = file[0]
             else:
                 continue
-
-            jp = JatsParser(base_path)
             
-
             if file in ref_map_json:
                 print("Skipped " + file)
                 continue
+
+            jp = JatsParser(base_path)
                 
             print(ref_map_json)
             blocks = jp.get_blocks(file)
@@ -140,14 +141,13 @@ def extract_block_reference():
             print(ref_map)
             ref_to_dir = jp.get_referencelist(blocks, ref_map)
             ref_map_json[file] = ref_to_dir
-            print(ref_map_json)
             # print(blocks)
 
             data = data + [tuple([file]) + x for x in jp.get_data(blocks, ref_to_dir)]
-            print(data)
         json.dump(ref_map_json, f)
         # break
-    pd.DataFrame(data, columns=['origin_dir', 'block', "reference_dir"]).to_csv("citation_data.csv")
+        ex_data = pd.read_csv(f"citation_data_{base_path}.csv")
+        pd.concat([ex_data, pd.DataFrame(data, columns=['origin_dir', 'block', "reference_dir"])]).to_csv(f"citation_data_{base_path}.csv")
     
 def main():
     extract_block_reference()
