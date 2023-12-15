@@ -2,19 +2,14 @@
 import glob
 import os
 
-
-import fitz
-from langchain.embeddings import HuggingFaceBgeEmbeddings, CacheBackedEmbeddings
-from langchain.storage import LocalFileStore
 import re
-from unidecode import unidecode
 import pandas as pd
-import shutil
 import lxml.etree as et
-from bs4 import BeautifulSoup
 import json
 
 from arxiv_utils import extract_refs_from_list, ArxivHandler
+
+from tqdm import tqdm
 
 base_path = "arxiv_sample"
 
@@ -121,7 +116,7 @@ def extract_block_reference():
         except json.decoder.JSONDecodeError:
             ref_map_json = {}
         data = []
-        for folder in next(os.walk(base_path))[1]:
+        for folder in tqdm(next(os.walk(base_path))[1]):
             file_dir = base_path + "/" + folder
             file = glob.glob(file_dir + "/*.cermxml")
             if file:
@@ -135,19 +130,20 @@ def extract_block_reference():
 
             jp = JatsParser(base_path)
                 
-            print(ref_map_json)
+            # print(ref_map_json)
             blocks = jp.get_blocks(file)
             ref_map = jp.get_ref_mapper(file=file)
-            print(ref_map)
+            # print(ref_map)
             ref_to_dir = jp.get_referencelist(blocks, ref_map)
             ref_map_json[file] = ref_to_dir
             # print(blocks)
 
-            data = data + [tuple([file]) + x for x in jp.get_data(blocks, ref_to_dir)]
-        json.dump(ref_map_json, f)
-        # break
-        ex_data = pd.read_csv(f"citation_data_{base_path}.csv")
-        pd.concat([ex_data, pd.DataFrame(data, columns=['origin_dir', 'block', "reference_dir"])]).to_csv(f"citation_data_{base_path}.csv")
+            data = [tuple([file]) + x for x in jp.get_data(blocks, ref_to_dir)]
+            json.dump(ref_map_json, f)
+            # break
+            # ex_data = pd.read_csv(f"citation_data_{base_path}.csv")
+            # pd.concat([ex_data, pd.DataFrame(data, columns=['origin_dir', 'block', "reference_dir"])]).to_csv(f"citation_data_{base_path}.csv")
+            pd.DataFrame(data, columns=['origin_dir', 'block', "reference_dir"]).to_csv(f"citation_data_{base_path}.csv", mode="a", header=not os.path.exists("citation_data_{base_path}.csv"))
     
 def main():
     extract_block_reference()

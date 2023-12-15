@@ -50,15 +50,22 @@ class ArxivHandler():
         query = f"ti:{title}",
         max_results = 10,    # Expand search if needed to more than 5 results, but practically, 5 is a good threshold
         )
-        for res in self.client.results(search):
-            if jaccard_similarity(res.title.lower().split(), title.lower().split()) > 0.8:
-                if not os.path.exists(directory + "/" + res.title.replace("/", " ")):
-                    os.mkdir(directory + "/" + res.title.replace("/", " "))
-                try:
-                    res.download_pdf(directory + "/" + res.title.replace("/", " "))
-                except:
-                    continue
-                return directory + "/" + res.title.replace("/", " ")
+        try:
+            search_results = self.client.results(search)
+        except:
+            return None
+        try:
+            for res in search_results:
+                if jaccard_similarity(res.title.lower().split(), title.lower().split()) > 0.8:
+                    if not os.path.exists(directory + "/" + res.title.replace("/", " ")):
+                        os.mkdir(directory + "/" + res.title.replace("/", " "))
+                    try:
+                        res.download_pdf(directory + "/" + res.title.replace("/", " "))
+                    except:
+                        continue
+                    return directory + "/" + res.title.replace("/", " ")
+        except:
+            return  None
         return None
 
 def extract_refs_from_bibtex(bibfile):

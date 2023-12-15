@@ -1,7 +1,12 @@
 arxiv_mine
 arxiv_data
+arxiv_data_test
 arxiv_sample
 cache
 __pycache__/arxiv_utils.cpython-38.pyc
 citation_context.parquet
 2210.12261v1.Z_LaVI__Zero_Shot_Language_Solver_Fueled_by_Visual_Imagination.pdf
+arxiv_data_test.rar
+__pycache__/jats_utils.cpython-38.pyc
+citation_data.csv
+citation_data_arxiv_sample.csv
