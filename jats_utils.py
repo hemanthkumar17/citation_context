@@ -25,9 +25,9 @@ def allTextNodes(root):
             yield child.tail
 
 class JatsParser():
-    # Roadmap
-    # ~Done~ 1. Parse blocks into content and references
-    # ~Done~ 2. Get reference title list and their respective tagging information
+    # Basic Pipeline
+    # 1. Parse blocks into content and references
+    # 2. Get reference title list and their respective tagging information
     # 3. Download reference list
     # 4. Identify reference tags in each block and add them to the dataset
     # 5. Continue this for a list of all references downloaded in a BFS fashion
