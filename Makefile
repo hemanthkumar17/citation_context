@@ -1,6 +1,6 @@
 .PHONY: extr extr_bib parse
 
-all: extr parse extr_bib parse_text
+all: extr parse_text mine
 
 extr:
 	python3 arxiv_extr.py
@@ -16,5 +16,8 @@ extr_bib:
 
 clean:
 	rm -rf arxiv_mine
+
+mine:
+	python3 jats_utils.py
 
 fresh: clean all
