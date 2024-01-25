@@ -6,7 +6,7 @@ search = arxiv.Search(
   sort_by = arxiv.SortCriterion.Relevance
 )
 
-base_path = "./arxiv_sample/"
+base_path = "./arxiv_context_test1/"
 
 for result in arxiv.Client().results(search):
   print(result.title)

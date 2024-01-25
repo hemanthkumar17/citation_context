@@ -2,6 +2,8 @@ arxiv_mine
 arxiv_data
 arxiv_data_test
 arxiv_sample
+arxiv_context_test1
+.venv
 cache
 __pycache__/arxiv_utils.cpython-38.pyc
 citation_context.parquet
@@ -10,3 +12,5 @@ arxiv_data_test.rar
 __pycache__/jats_utils.cpython-38.pyc
 citation_data.csv
 citation_data_arxiv_sample.csv
+citation_data_arxiv_context_test1.csv
+metadata_arxiv_context_test1.json

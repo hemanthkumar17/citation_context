@@ -7,11 +7,11 @@ import pandas as pd
 import lxml.etree as et
 import json
 
-from arxiv_utils import extract_refs_from_list, ArxivHandler
+from arxiv_utils import ArxivHandler
 
 from tqdm import tqdm
 
-base_path = "arxiv_sample"
+base_path = "arxiv_context_test1"
 
 def get_labels(text):
     return re.findall(r"\[([0-9_]+)\]", text)
@@ -108,7 +108,7 @@ class JatsParser():
 
 def extract_block_reference():
 
-    with open(f"metadata_{base_path}.json", "r+") as f:
+    with open(f"metadata_{base_path}.json", "a+") as f:
         try:
             ref_map_json = json.load(f)
         except IOError:
