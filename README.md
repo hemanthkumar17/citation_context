@@ -6,9 +6,10 @@
 
 ## Installation
 
-[Install packages] (requirements.txt yet to be created) <br>
-Get the cermine submodules from the cermine repo <br>
-Follow cermine installation to get the standalone application satisfying the files mentioned in the Makefile <br>
+pip install -r requirements.txt <br>
+Install cermine again if you prefer a later version  <br>
+~~Get the cermine submodules from the cermine repo~~ <br>
+~~Follow cermine installation to get the standalone application satisfying the files mentioned in the Makefile~~ <br>
 
 ```
 1. make extr
