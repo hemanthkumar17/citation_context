@@ -6,10 +6,10 @@ extr:
 	python3 arxiv_extr.py
 
 parse:
-	java -cp ./cermine/cermine-impl/target/cermine-impl-1.14-SNAPSHOT-jar-with-dependencies.jar pl.edu.icm.cermine.ContentExtractor -path /root/citation_context/arxiv_context_test1 -outputs bibtex
+	java -cp ./cermine-impl/target/cermine-impl-1.14-SNAPSHOT-jar-with-dependencies.jar pl.edu.icm.cermine.ContentExtractor -path /root/citation_context/arxiv_context_test1 -outputs bibtex
 
 parse_text:
-	java -cp ./cermine/cermine-impl/target/cermine-impl-1.14-SNAPSHOT-jar-with-dependencies.jar pl.edu.icm.cermine.ContentExtractor -path /root/citation_context/arxiv_context_test1 -outputs jats
+	java -cp ./cermine-impl/target/cermine-impl-1.14-SNAPSHOT-jar-with-dependencies.jar pl.edu.icm.cermine.ContentExtractor -path /root/citation_context/arxiv_context_test1 -outputs jats
 
 extr_bib:
 	python3 arxiv_extr_from_bib.py
